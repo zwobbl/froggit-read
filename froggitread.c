@@ -126,8 +126,8 @@ char checksum(int length, char *buff)
 
 void display_sensor_data()
 {
+    int sensor_type = manchester[1];
     int ch = ((manchester[3] & 0x70) / 16) + 1;
-    int data_type = manchester[1];
     int temp_raw = (manchester[3] & 0x7) * 256 + manchester[4];
     float temp_fahrenheit = (temp_raw - 400) / 10;
     float temp_celsius = (temp_raw - 720) * 0.0556;
@@ -139,8 +139,8 @@ void display_sensor_data()
     printf("received message: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\n", 
            manchester[0], manchester[1], manchester[2], manchester[3], manchester[4], manchester[5], manchester[6]);
 
-    if (!(data_type == 0x45 || data_type == 0x46))
-        printf("WARN: unknown datatype 0x%02x received\n", data_type);
+    if (!(sensor_type == 0x45 || sensor_type == 0x46))
+        printf("WARN: unknown sensor type 0x%02x received\n", sensor_type);
  
     if (ch < 1 || ch > MAX_NUM_SENSORS)
         printf("WARN: illegal channel id %d received\n", ch);
@@ -153,5 +153,6 @@ void display_sensor_data()
         return;
     }
 
-    printf("Sensor id: %d, Temperature: %.1f°C / %.1f°F, Humidity: %d%, Low battery: %d\n\n", ch, temp_celsius, temp_fahrenheit, humidity, low_bat);
+    printf("Sensor type: 0x%02x, Channel: %d, Temperature: %.1f°C / %.1f°F, Humidity: %d%, Low battery: %d\n\n", 
+           sensor_type, ch, temp_celsius, temp_fahrenheit, humidity, low_bat);
 }
